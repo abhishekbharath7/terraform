@@ -23,8 +23,3 @@ resource "aws_instance" "windows_server_2022" {
     Name = "WindowsServer2022"
   }  
 }
-
-resource "aws_ec2_instance_state" "stop_instance" {
-  instance_id = aws_instance.windows_server_2022.id
-  state       = "stopped"
-}
