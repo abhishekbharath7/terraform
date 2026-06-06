@@ -130,6 +130,7 @@ resource "aws_security_group" "ad_dc_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = { Name = "corporate-dc-sg" }
 }
 
 # Production Cloud Security Group
@@ -157,6 +158,7 @@ resource "aws_security_group" "prod_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = { Name = "production-workload-sg" }
 }
 
 
@@ -182,8 +184,17 @@ resource "aws_instance" "onprem_dc" {
 
   user_data = <<EOF
 <powershell>
+$ErrorActionPreference = "SilentlyContinue"
+
+# Immediately force the local administrator password baseline
+$admin = [adsi]"WinNT://localhost/Administrator,user"
+$admin.SetPassword("EnterprisePass123!")
+
+# Execute environment standardization and Active Directory Forest Provisioning
 Rename-Computer -NewName "CORP-DC01" -Force
 Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools
+Import-Module ADDSDeployment
+
 $Password = ConvertTo-SecureString "EnterprisePass123!" -AsPlainText -Force
 Install-ADDSForest -DomainName "corp.local" -SafeModeAdministratorPassword $Password -Force
 </powershell>
@@ -225,14 +236,24 @@ resource "aws_instance" "prod_server" {
 
   user_data = <<EOF
 <powershell>
-Rename-Computer -NewName "PROD-APP01" -Force
-Start-Sleep -Seconds 30
+$ErrorActionPreference = "SilentlyContinue"
 
+# Force the local administration configuration password profile
+$admin = [adsi]"WinNT://localhost/Administrator,user"
+$admin.SetPassword("EnterprisePass123!")
+
+Rename-Computer -NewName "PROD-APP01" -Force
+
+# Create a secure administrative credential object to perform the active directory bind
 $domain   = "corp.local"
-$username = "corp.local\Administrator"
+$username = "CORP\Administrator"
 $password = ConvertTo-SecureString "EnterprisePass123!" -AsPlainText -Force
 $credential = New-Object System.Management.Automation.PSCredential($username, $password)
 
+# Wait loop to ensure the custom DHCP configurations have cycled and stabilized name services
+Start-Sleep -Seconds 45
+
+# Attempt non-interactive network-domain join execution
 Add-Computer -DomainName $domain -Credential $credential -Restart -Force
 </powershell>
 EOF
@@ -242,7 +263,8 @@ EOF
   }
 
   depends_on = [
-    aws_instance.onprem_dc,
-    aws_vpc_dhcp_options_association.prod_dhcp_assoc
+    aws_vpc_peering_connection.hybrid_link,
+    aws_vpc_dhcp_options_association.prod_dhcp_assoc,
+    aws_instance.onprem_dc
   ]
 }
