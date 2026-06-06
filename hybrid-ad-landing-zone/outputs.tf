@@ -18,6 +18,11 @@ output "dc_private_ip" {
   value       = aws_instance.onprem_dc.private_ip
 }
 
+output "dc_public_ip" {
+  description = "The Public IP of the Domain Controller used to connect via RDP for verification"
+  value       = aws_instance.onprem_dc.public_ip
+}
+
 output "prod_vpc_id" {
   description = "The ID of the AWS Production Cloud Landing Zone VPC"
   value       = aws_vpc.prod_vpc.id

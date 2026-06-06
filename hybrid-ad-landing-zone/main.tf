@@ -184,19 +184,24 @@ resource "aws_instance" "onprem_dc" {
 
   user_data = <<EOF
 <powershell>
-$ErrorActionPreference = "SilentlyContinue"
+$ErrorActionPreference = "Stop"
 
-# Immediately force the local administrator password baseline
+# 1. Force local admin password immediately
 $admin = [adsi]"WinNT://localhost/Administrator,user"
 $admin.SetPassword("EnterprisePass123!")
 
-# Execute environment standardization and Active Directory Forest Provisioning
+# 2. System setup and Active Directory installation
 Rename-Computer -NewName "CORP-DC01" -Force
 Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools
 Import-Module ADDSDeployment
 
+# 3. Forest Provisioning with automated post-reboot enforcement
 $Password = ConvertTo-SecureString "EnterprisePass123!" -AsPlainText -Force
-Install-ADDSForest -DomainName "corp.local" -SafeModeAdministratorPassword $Password -Force
+Install-ADDSForest `
+  -DomainName "corp.local" `
+  -SafeModeAdministratorPassword $Password `
+  -InstallDns:$true `
+  -Force:$true
 </powershell>
 EOF
 
@@ -238,14 +243,23 @@ resource "aws_instance" "prod_server" {
 <powershell>
 $ErrorActionPreference = "SilentlyContinue"
 
-# Force the local administration configuration password profile
+# 1. Force local admin password immediately
 $admin = [adsi]"WinNT://localhost/Administrator,user"
 $admin.SetPassword("EnterprisePass123!")
-
 Rename-Computer -NewName "PROD-APP01" -Force
 
-# Create a secure administrative credential object to perform the active directory bind
+# 2. Smart Network Sync: Wait loop until Domain Controller is fully live
 $domain   = "corp.local"
+while ($true) {
+    $check = Resolve-DnsName -Name $domain -ErrorAction SilentlyContinue
+    if ($check) { break }
+    Start-Sleep -Seconds 15
+}
+
+# Extra buffer to ensure Active Directory Web Services have initialized
+Start-Sleep -Seconds 30
+
+# 3. Securely handle the Domain Join execution
 $username = "CORP\Administrator"
 $password = ConvertTo-SecureString "EnterprisePass123!" -AsPlainText -Force
 $credential = New-Object System.Management.Automation.PSCredential($username, $password)
@@ -253,7 +267,7 @@ $credential = New-Object System.Management.Automation.PSCredential($username, $p
 # Wait loop to ensure the custom DHCP configurations have cycled and stabilized name services
 Start-Sleep -Seconds 45
 
-# Attempt non-interactive network-domain join execution
+# Domain join execution
 Add-Computer -DomainName $domain -Credential $credential -Restart -Force
 </powershell>
 EOF
