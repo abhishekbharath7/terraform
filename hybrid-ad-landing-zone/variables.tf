@@ -1,9 +1,13 @@
 variable "aws_region" {
   type    = string
-  default = "us-east-1"
 }
 
 variable "instance_type" {
   type    = string
-  default = "t3.medium" # Gives Windows Server enough compute memory to run Active Directory smoothly
+}
+
+variable "admin_password" {
+  type        = string
+  description = "Administrator password for Windows instances"
+  sensitive   = true  # This hides the value in Terraform output
 }

@@ -5,7 +5,7 @@ output "onprem_vpc_id" {
 
 output "onprem_private_subnet_id" {
   description = "The Subnet ID where the Active Directory Domain Controller lives"
-  value       = aws_subnet.onprem_private.id
+  value       = aws_subnet.onprem_subnet.id
 }
 
 output "onprem_dc_security_group_id" {
@@ -30,7 +30,7 @@ output "prod_vpc_id" {
 
 output "prod_private_subnet_id" {
   description = "The Subnet ID where the production workloads live"
-  value       = aws_subnet.prod_private.id
+  value       = aws_subnet.prod_subnet.id
 }
 
 output "prod_security_group_id" {
