@@ -1,4 +1,4 @@
-# Automated Hybrid Cloud Identity Hub: Cross-VPC Active Directory Integration
+<img width="1919" height="1079" alt="Screenshot 2026-06-07 185801" src="https://github.com/user-attachments/assets/936bb2da-895a-405d-98c7-60d622a21556" /># Automated Hybrid Cloud Identity Hub: Cross-VPC Active Directory Integration
 
 An enterprise-grade infrastructure-as-code (IaC) deployment that automatically provisions an isolated, multi-VPC hybrid network architecture on Amazon Web Services (AWS). This architecture sets up a simulated on-premises corporate office containing a core Windows Server Active Directory Domain Controller (DC) and securely bridges it to an independent AWS Production VPC Landing Zone via a private VPC Peering connection.
 
@@ -97,6 +97,8 @@ Generate a deterministic plan to preview the resource modifications, hardware as
 terraform plan
 ```
 
+<img width="1919" height="1079" alt="Screenshot 2026-06-07 185801" src="https://github.com/user-attachments/assets/2abb10ac-30d6-4206-84a9-b2a07e47f9b5" />
+
 ### Step 4: Provision Infrastructure
 
 Execute the cloud orchestration phase to spin up the architecture. Hardware virtualization and the initial OS boot sequence take roughly 2 to 3 minutes:
@@ -104,6 +106,8 @@ Execute the cloud orchestration phase to spin up the architecture. Hardware virt
 ```bash
 terraform apply --auto-approve
 ```
+
+<img width="1919" height="1079" alt="Screenshot 2026-06-06 215914" src="https://github.com/user-attachments/assets/f67ee584-6fd1-4c18-99ee-4356752fa6c8" />
 
 
 
