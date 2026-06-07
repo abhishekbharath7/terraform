@@ -1,4 +1,4 @@
-<img width="1919" height="1079" alt="Screenshot 2026-06-07 185801" src="https://github.com/user-attachments/assets/936bb2da-895a-405d-98c7-60d622a21556" /># Automated Hybrid Cloud Identity Hub: Cross-VPC Active Directory Integration
+# Automated Hybrid Cloud Identity Hub: Cross-VPC Active Directory Integration
 
 An enterprise-grade infrastructure-as-code (IaC) deployment that automatically provisions an isolated, multi-VPC hybrid network architecture on Amazon Web Services (AWS). This architecture sets up a simulated on-premises corporate office containing a core Windows Server Active Directory Domain Controller (DC) and securely bridges it to an independent AWS Production VPC Landing Zone via a private VPC Peering connection.
 
