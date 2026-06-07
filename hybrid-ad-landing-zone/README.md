@@ -163,3 +163,15 @@ To prevent unexpected consumption of your cloud billing quotas, tear down the ar
 ```bash
 terraform destroy --auto-approve
 ```
+
+
+## 📸 Expected Output Verification Screenshots
+
+<img width="1735" height="255" alt="Screenshot 2026-06-07 225830" src="https://github.com/user-attachments/assets/c1351a0a-2fd3-467b-b89a-b672ab357f14" />
+
+<img width="1861" height="1010" alt="Screenshot 2026-06-07 230550" src="https://github.com/user-attachments/assets/ea263aa6-4475-49e7-94ba-1e57bdd1f31e" />
+
+<img width="1861" height="1010" alt="Screenshot 2026-06-07 230550" src="https://github.com/user-attachments/assets/6f00db08-5ca6-4394-8dec-4f77c8ee00a6" />
+
+
+
